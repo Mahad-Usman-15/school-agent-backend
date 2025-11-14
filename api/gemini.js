@@ -1,4 +1,4 @@
-import fetch from 'node-fetch'
+import fetch from "node-fetch";
 
 const SCHOOL_CONTEXT = `
 The School has been nurturing students since early 2017.
@@ -16,69 +16,60 @@ school events, creative modules, and parent workshops.
 `;
 
 export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', 'https://mahad-usman-15.github.io');  
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); 
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');  
+  // Correct CORS
+  res.setHeader("Access-Control-Allow-Origin", "https://mahad-usman-15.github.io");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept");
 
-  // Handle OPTIONS method (preflight)
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end(); // Respond to preflight request
+  // Preflight
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
   }
 
-  // Handle POST request
-  if (req.method === 'POST') {
-    const userMessage = req.body.message;
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
 
-    if (!userMessage) {
-      return res.status(400).json({ error: "Missing 'message'" });
-    }
+  const userMessage = req.body.message;
+  if (!userMessage) {
+    return res.status(400).json({ error: "Missing 'message'" });
+  }
 
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  {
-                    text: `
-                      You are the official School chatbot.
-                      Always answer using the following school information:
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `
+You are the official School chatbot.
+Use the following school information:
 
-                      ${SCHOOL_CONTEXT}
+${SCHOOL_CONTEXT}
 
-                      User: ${userMessage}
-                    `
-                  }
-                ]
-              }
-            ]
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        console.error("Google Gemini API Error:", response.statusText);
-        return res.status(500).json({ error: "Gemini API request failed" });
+User: ${userMessage}
+                `,
+                },
+              ],
+            },
+          ],
+        }),
       }
+    );
 
-      const data = await response.json();
-      const reply =
-        data.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "Sorry, I couldn’t generate a response.";
+    const data = await response.json();
+    const reply =
+      data.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "Sorry, I couldn’t generate a response.";
 
-      res.status(200).json({ reply });
-    } catch (err) {
-      console.error("Server Error:", err);
-      res.status(500).json({ error: "Something went wrong." });
-    }
-  } else {
-    res.status(405).json({ error: 'Method Not Allowed' });
+    return res.status(200).json({ reply });
+  } catch (err) {
+    console.error("Server Error:", err);
+    return res.status(500).json({ error: "Something went wrong." });
   }
 }
-
-
