@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';  // for making the API request
+import fetch from 'node-fetch'
 
 const SCHOOL_CONTEXT = `
 The School has been nurturing students since early 2017.
@@ -17,9 +17,9 @@ school events, creative modules, and parent workshops.
 
 export default async function handler(req, res) {
   // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', 'https://mahad-usman-15.github.io/school-agent');  // Or replace '*' with the specific frontend domain
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');  // Allow specific HTTP methods
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');  // Allow headers like Content-Type
+  res.setHeader('Access-Control-Allow-Origin', 'https://mahad-usman-15.github.io/school-agent');  
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); 
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');  
 
   // Handle OPTIONS method (preflight)
   if (req.method === 'OPTIONS') {
@@ -80,3 +80,4 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'Method Not Allowed' });
   }
 }
+
