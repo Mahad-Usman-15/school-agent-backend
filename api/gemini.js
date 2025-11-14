@@ -17,7 +17,7 @@ school events, creative modules, and parent workshops.
 
 export default async function handler(req, res) {
   // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', 'https://mahad-usman-15.github.io/school-agent');  
+  res.setHeader('Access-Control-Allow-Origin', 'https://mahad-usman-15.github.io');  
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); 
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');  
 
@@ -80,4 +80,5 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'Method Not Allowed' });
   }
 }
+
 
